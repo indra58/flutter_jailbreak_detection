@@ -39,7 +39,7 @@ android {
     }
     defaultConfig {
         applicationId "appmire.be.flutterjailbreakdetectionexample"
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion 21
         targetSdk 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
