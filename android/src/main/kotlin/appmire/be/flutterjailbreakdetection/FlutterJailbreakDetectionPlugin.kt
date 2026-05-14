@@ -1,6 +1,9 @@
 package appmire.be.flutterjailbreakdetection
 
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Debug
 import android.provider.Settings
 import com.scottyab.rootbeer.RootBeer
 
@@ -12,7 +15,12 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import android.os.Handler
 import android.os.Looper
-import java.lang.Thread
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
+import java.io.InputStreamReader
+import java.net.InetSocketAddress
+import java.net.Socket
 
 class FlutterJailbreakDetectionPlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var context: Context
@@ -53,6 +61,27 @@ class FlutterJailbreakDetectionPlugin : FlutterPlugin, MethodCallHandler {
             }.start()
         } else if (call.method.equals("developerMode")) {
             result.success(isDevMode())
+        } else if (call.method.equals("fridaDetected")) {
+            Thread {
+                val detected = FridaDetector.isFridaDetected()
+                Handler(Looper.getMainLooper()).post {
+                    result.success(detected)
+                }
+            }.start()
+        } else if (call.method.equals("isCompromised")) {
+            Thread {
+                val fridaDetected = FridaDetector.isFridaDetected()
+                val isRooted = try {
+                    RootBeer(context).isRooted
+                } catch (e: Exception) {
+                    false
+                }
+                val nativeRooted = NativeRootDetector.isDeviceRooted(context)
+                val compromised = fridaDetected || isRooted || nativeRooted
+                Handler(Looper.getMainLooper()).post {
+                    result.success(compromised)
+                }
+            }.start()
         } else {
             result.notImplemented()
         }

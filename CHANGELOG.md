@@ -1,3 +1,18 @@
+## 1.13.0
+
+* **Frida instrumentation detection** — new `fridaDetected` API
+  - Android: Port scanning, /proc/self/maps, thread names, named pipes, debugger check
+  - iOS: Port scanning, dylib analysis, filesystem artifacts, sysctl debugger check
+* **Aggregated compromise check** — new `isCompromised` API
+  - Combines root/jailbreak + Frida + native root detection + debugger detection
+  - Returns true if ANY signal is positive
+* **Native root detection** (Android) — independent of RootBeer
+  - Obfuscated string construction to resist Frida string scanning
+  - Reflection-based Build.TAGS check to bypass field hooking
+  - Magisk mount namespace detection
+  - SELinux enforcement check
+* Fully backward compatible with existing `jailbroken` and `developerMode` APIs
+
 ## 1.8.0
 
 * Upgrade android embedding
